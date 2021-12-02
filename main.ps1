@@ -23,14 +23,19 @@ param (
     $excludedWordsFiles,
     [Parameter(Mandatory = $false, Position = 3, ParameterSetName="ExcludedWords",
                ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true,
-               HelpMessage = "List of excluded words")][string]$excludedWords,
+               HelpMessage = "List of excluded words")][string[]]$excludedWords,
     [Parameter][switch]$quiet
 )
 
-. ./fileLoader.ps1
+. ./fileOperations.ps1
 
 $data = fileLoader($inputFile, $fileFormat);
 
 if($null -eq $data){
 	throw "No data.";
+	exit;
 }
+
+./counter.ps1
+
+prepareCSV($data, $inputFile + ".words.csv");

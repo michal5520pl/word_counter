@@ -1,3 +1,33 @@
+#region textFiles
+
+function saveTextFile([String] $file, $data, $mode = "a"){
+    if($mode -ieq "a"){
+        return $($data | Add-Content -Path $file);
+    }
+    elseif($mode -ieq "w"){
+        return $($data | Set-Content -Path $file);
+    }
+    else {
+        throw "Unknown mode! Exiting.";
+        exit;
+    }
+}
+
+function readTextFile([String] $file, [bool] $raw = $false){
+    checkIfExists($file);
+
+    if($raw){
+        return Get-Content -Path $file -Raw;
+    }
+    else {
+        return Get-Content -Path $file;
+    }
+}
+
+#endregion textFiles
+
+#region RTFiles
+
 function checkFormat([string] $inputFile){
     # Check if it is XLS
     if($inputFile -ilike "*.xls"){
@@ -39,11 +69,20 @@ function loadExcel([string] $inputFile){
 	}
 }
 
-function fileLoader([string] $inputFile, [AllowNull][string] $fileFormat){
-    # Check if there is the file
-    if($(Get-ChildItem -Path $inputFile -File).Length -ne 1){
+#endregion RTFiles
+
+#region allFiles
+
+function checkIfExists([String] $inputPath){
+    if($(Get-ChildItem -Path $inputPath -File).Length -ne 1){
+        throw "No file!";
         exit;
     }
+}
+
+function fileLoader([string] $inputFile, [AllowNull][string] $fileFormat){
+    # Check if there is the file
+    checkIfExists($inputFile);
 
     # Check if user gave the file format
     if($fileFormat -eq $null){
@@ -61,3 +100,5 @@ function fileLoader([string] $inputFile, [AllowNull][string] $fileFormat){
         exit;
     }
 }
+
+#endregion allFiles
